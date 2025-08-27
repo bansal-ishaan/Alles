@@ -145,7 +145,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 // FIXED VERSION OF getAllTweets
 const getAllTweets = asyncHandler(async (req, res) => {
-    console.log("🔍 Starting getAllTweets function...");
+    // console.log(" Starting getAllTweets function...");
     
     try {
         // Check if user is authenticated and get userId
@@ -158,63 +158,64 @@ const getAllTweets = asyncHandler(async (req, res) => {
             }
         }
 
-        console.log("👤 User ID:", userId ? userId.toString() : "Guest user");
+        // console.log("User ID:", userId ? userId.toString() : "Guest user");
 
         // Build aggregation pipeline step by step
         const pipeline = [
-            // First, get all tweets
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "owner",
-                    foreignField: "_id",
-                    as: "ownerDetails",
-                    pipeline: [
-                        { 
-                            $project: { 
-                                username: 1, 
-                                "avatar.url": 1,
-                                fullName: 1 // Added fullName for better user info
-                            } 
-                        }
-                    ],
-                },
-            },
-            {
-                $lookup: {
-                    from: "likes",
-                    localField: "_id",
-                    foreignField: "tweet",
-                    as: "likeDetails",
-                },
-            },
-            {
-                $addFields: {
-                    likesCount: { $size: "$likeDetails" },
-                    ownerDetails: { $first: "$ownerDetails" },
-                    // Simplified isLiked logic
-                    isLiked: userId ? {
-                        $in: [userId, "$likeDetails.likedBy"]
-                    } : false,
-                },
-            },
-            { $sort: { createdAt: -1 } },
-            {
-                $project: {
-                    content: 1,
-                    ownerDetails: 1,
-                    likesCount: 1,
-                    createdAt: 1,
-                    isLiked: 1,
-                    updatedAt: 1, // Added updatedAt for completeness
-                },
-            },
-        ];
+  {
+    $lookup: {
+      from: "users",
+      localField: "owner",
+      foreignField: "_id",
+      as: "ownerDetails",
+      pipeline: [
+        {
+          $project: {
+            username: 1,
+            "avatar.url": 1,
+            fullName: 1
+          }
+        }
+      ],
+    },
+  },
+  {
+    $lookup: {
+      from: "likes",
+      localField: "_id",
+      foreignField: "tweet",
+      as: "likeDetails",
+    },
+  },
+  {
+    $addFields: {
+      likesCount: { $size: "$likeDetails" },
+      ownerDetails: { $first: "$ownerDetails" },
+      ownerId: "$owner", // 👈 add raw ownerId
+      isLiked: userId ? {
+        $in: [userId, "$likeDetails.likedBy"]
+      } : false,
+    },
+  },
+  { $sort: { createdAt: -1 } },
+  {
+    $project: {
+      content: 1,
+      ownerDetails: 1,
+      ownerId: 1, // 👈 keep it in the result
+      likesCount: 1,
+      createdAt: 1,
+      isLiked: 1,
+      updatedAt: 1,
+    },
+  },
+];
 
-        // console.log("🔄 Executing aggregation pipeline...");
+
+        // console.log("Executing aggregation pipeline...");
         const tweets = await Tweet.aggregate(pipeline);
 
-        // console.log(`✅ Found ${tweets.length} tweets`);
+        // console.log(`Found ${tweets.length} tweets`);
 
         return res
             .status(200)
