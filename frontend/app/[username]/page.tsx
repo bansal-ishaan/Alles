@@ -6,6 +6,7 @@ import Link from 'next/link';
 import VideoCard from '../components/VideoCard';
 import SubscribeButton from '../components/SubscribeButton';
 import type { Video } from '../types';
+import { serverUrl } from '@/lib/constants';
 
 interface ChannelProfile {
     _id: string;
@@ -21,9 +22,6 @@ interface LoggedInUser {
     _id: string;
     username: string;
 }
-
-// ✅ Use one place for server URL
-export const serverUrl = "https://alles.onrender.com";
 
 export default function ChannelPage() {
     const params = useParams();
