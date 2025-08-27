@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { GoHome, GoVideo } from 'react-icons/go';
-import { MdSubscriptions, MdOutlineHistory, MdOutlineWatchLater, MdOutlineThumbUp } from 'react-icons/md';
+import { MdSubscriptions, MdOutlineHistory, MdOutlineThumbUp } from 'react-icons/md';
 import { serverUrl } from '@/lib/constants';
 import { FaTwitter } from 'react-icons/fa'; // Import the Twitter icon
 

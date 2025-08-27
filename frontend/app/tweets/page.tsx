@@ -6,6 +6,7 @@ import TweetComposer from '../components/TweetComposer';
 import TweetItem, { TweetItemData } from '../components/TweetItem';
 import { useAuth } from '../context/AuthContext';
 
+// Typing for the /current-user API response
 interface MeResponse {
   data?: {
     _id: string;
@@ -13,7 +14,22 @@ interface MeResponse {
   };
 }
 
-const TweetsPage = () => {
+// Typing for the /tweet API response
+interface TweetResponse {
+  _id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  ownerId: string;
+  ownerDetails: {
+    _id: string;
+    username: string;
+  };
+  likesCount?: number;
+  isLiked?: boolean;
+}
+
+const TweetsPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [tweets, setTweets] = useState<TweetItemData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,19 +39,22 @@ const TweetsPage = () => {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-  const fetchMe = useCallback(async () => {
+  const fetchMe = useCallback(async (): Promise<{ _id: string; username: string } | null> => {
     if (!isLoggedIn) return null;
+
     const res = await fetch(`${serverUrl}/api/v1/users/current-user`, {
       headers: { Authorization: token ? `Bearer ${token}` : '' },
       credentials: 'include',
     });
+
     if (!res.ok) return null;
+
     const data: MeResponse = await res.json();
     return data?.data || null;
   }, [isLoggedIn, token]);
 
   const fetchTweets = useCallback(
-    async (userId: string) => {
+    async (userId: string): Promise<TweetItemData[]> => {
       const url = showAll
         ? `${serverUrl}/api/v1/tweet/all`
         : `${serverUrl}/api/v1/tweet/user/${userId}`;
@@ -44,13 +63,15 @@ const TweetsPage = () => {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
         credentials: 'include',
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.message || 'Failed to fetch tweets');
       }
-      const data = await res.json();
 
-      return (data?.data || []).map((t: any) => ({
+      const data: { data?: TweetResponse[] } = await res.json();
+
+      return (data?.data || []).map((t: TweetResponse) => ({
         _id: t._id,
         content: t.content,
         createdAt: t.createdAt,
@@ -59,7 +80,7 @@ const TweetsPage = () => {
         ownerDetails: t.ownerDetails,
         likesCount: t.likesCount ?? 0,
         isLiked: t.isLiked ?? false,
-      })) as TweetItemData[];
+      }));
     },
     [token, showAll]
   );
@@ -68,17 +89,20 @@ const TweetsPage = () => {
     try {
       setLoading(true);
       setError(null);
+
       const meData = await fetchMe();
       if (!meData) {
         setTweets([]);
         setMe(null);
         return;
       }
+
       setMe(meData);
       const items = await fetchTweets(meData._id);
       setTweets(items);
-    } catch (err: any) {
-      setError(err?.message || 'Something went wrong');
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError('Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -131,7 +155,7 @@ const TweetsPage = () => {
           <TweetItem
             key={t._id}
             tweet={t}
-            canEdit={showAll ? t.ownerId === me?._id : true} // ✅ in My Tweets, allow all
+            canEdit={showAll ? t.ownerId === me?._id : true} // ✅ In "My Tweets", allow editing all
             onChanged={load}
           />
         ))}
@@ -141,4 +165,3 @@ const TweetsPage = () => {
 };
 
 export default TweetsPage;
-

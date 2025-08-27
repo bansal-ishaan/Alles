@@ -15,10 +15,13 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ onCreated }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
+
     setSubmitting(true);
     setError(null);
+
     try {
       const token = localStorage.getItem('accessToken');
+
       const res = await fetch(`${serverUrl}/api/v1/tweet`, {
         method: 'POST',
         headers: {
@@ -28,14 +31,17 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ onCreated }) => {
         credentials: 'include',
         body: JSON.stringify({ content: content.trim() }),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.message || 'Failed to create tweet');
       }
+
       setContent('');
       onCreated();
-    } catch (err: any) {
-      setError(err?.message || 'Something went wrong');
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError('Something went wrong');
     } finally {
       setSubmitting(false);
     }
@@ -70,4 +76,3 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ onCreated }) => {
 };
 
 export default TweetComposer;
-
