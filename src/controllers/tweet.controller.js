@@ -143,54 +143,106 @@ const getUserTweets = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, tweets, "Tweets fetched successfully"));
 });
 
+// FIXED VERSION OF getAllTweets
 const getAllTweets = asyncHandler(async (req, res) => {
-    const tweets = await Tweet.aggregate([
-        {
-            $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "ownerDetails",
-                pipeline: [{ $project: { username: 1, "avatar.url": 1 } }],
-            },
-        },
-        {
-            $lookup: {
-                from: "likes",
-                localField: "_id",
-                foreignField: "tweet",
-                as: "likeDetails",
-                pipeline: [{ $project: { likedBy: 1 } }],
-            },
-        },
-        {
-            $addFields: {
-                likesCount: { $size: "$likeDetails" },
-                ownerDetails: { $first: "$ownerDetails" },
-                isLiked: {
-                    $cond: {
-                        if: { $in: [new mongoose.Types.ObjectId(req.user?._id), "$likeDetails.likedBy"] },
-                        then: true,
-                        else: false,
-                    },
+    console.log("🔍 Starting getAllTweets function...");
+    
+    try {
+        // Check if user is authenticated and get userId
+        let userId = null;
+        if (req.user?._id) {
+            if (typeof req.user._id === 'string' && isValidObjectId(req.user._id)) {
+                userId = new mongoose.Types.ObjectId(req.user._id);
+            } else if (mongoose.Types.ObjectId.isValid(req.user._id)) {
+                userId = req.user._id;
+            }
+        }
+
+        console.log("👤 User ID:", userId ? userId.toString() : "Guest user");
+
+        // Build aggregation pipeline step by step
+        const pipeline = [
+            // First, get all tweets
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "ownerDetails",
+                    pipeline: [
+                        { 
+                            $project: { 
+                                username: 1, 
+                                "avatar.url": 1,
+                                fullName: 1 // Added fullName for better user info
+                            } 
+                        }
+                    ],
                 },
             },
-        },
-        { $sort: { createdAt: -1 } },
-        {
-            $project: {
-                content: 1,
-                ownerDetails: 1,
-                likesCount: 1,
-                createdAt: 1,
-                isLiked: 1,
+            {
+                $lookup: {
+                    from: "likes",
+                    localField: "_id",
+                    foreignField: "tweet",
+                    as: "likeDetails",
+                },
             },
-        },
-    ]);
+            {
+                $addFields: {
+                    likesCount: { $size: "$likeDetails" },
+                    ownerDetails: { $first: "$ownerDetails" },
+                    // Simplified isLiked logic
+                    isLiked: userId ? {
+                        $in: [userId, "$likeDetails.likedBy"]
+                    } : false,
+                },
+            },
+            { $sort: { createdAt: -1 } },
+            {
+                $project: {
+                    content: 1,
+                    ownerDetails: 1,
+                    likesCount: 1,
+                    createdAt: 1,
+                    isLiked: 1,
+                    updatedAt: 1, // Added updatedAt for completeness
+                },
+            },
+        ];
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, tweets, "All tweets fetched successfully"));
+        // console.log("🔄 Executing aggregation pipeline...");
+        const tweets = await Tweet.aggregate(pipeline);
+
+        // console.log(`✅ Found ${tweets.length} tweets`);
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, tweets, "All tweets fetched successfully"));
+
+    } catch (error) {
+        console.error("❌ Error in getAllTweets:", {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+
+        // More specific error handling
+        if (error.name === 'CastError') {
+            throw new apierrors(400, "Invalid data format in request");
+        }
+        
+        if (error.name === 'ValidationError') {
+            throw new apierrors(400, "Data validation failed");
+        }
+
+        if (error.message.includes('connection')) {
+            throw new apierrors(503, "Database connection error");
+        }
+
+        // Generic error
+        throw new apierrors(500, `Failed to fetch tweets: ${error.message}`);
+    }
 });
 
 export { getAllTweets, createTweet, getUserTweets, updateTweet, deleteTweet };
