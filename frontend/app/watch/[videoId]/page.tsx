@@ -5,7 +5,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatTimeAgo, formatViews } from "@/lib/utils";
-import { Share, Download, MoreHorizontal } from "lucide-react";
+import { Share, MoreHorizontal } from "lucide-react";
 import SubscribeButton from "@/app/components/SubscribeButton";
 import CommentsSection from "@/app/components/CommentsSection";
 import SuggestedVideos from "@/app/components/SuggestedVideos";
@@ -306,9 +306,7 @@ export default function WatchPage({
               <Share size={16} /> {showCopiedMessage ? "Copied!" : "Share"}
               {/* <-- NEW: Conditional text */}
             </button>
-            <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-full text-sm font-semibold">
-              <Download size={16} /> Download
-            </button>
+            
             <button className="p-2 bg-gray-800 hover:bg-gray-700 rounded-full">
               <MoreHorizontal size={16} />
             </button>
