@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Pencil, Trash2, Heart } from 'lucide-react';
+import { serverUrl } from '@/lib/constants';
 
 export interface TweetItemData {
   _id: string;
@@ -33,7 +34,7 @@ const TweetItem: React.FC<TweetItemProps> = ({ tweet, canEdit, onChanged }) => {
     setBusy(true);
     try {
       const token = localStorage.getItem('accessToken');
-      await fetch(`/api/v1/tweet/${tweet._id}`, {
+      await fetch(`${serverUrl}/api/v1/tweet/${tweet._id}`, {
         method: 'DELETE',
         headers: { Authorization: token ? `Bearer ${token}` : '' },
         credentials: 'include',
@@ -51,7 +52,7 @@ const TweetItem: React.FC<TweetItemProps> = ({ tweet, canEdit, onChanged }) => {
     setBusy(true);
     try {
       const token = localStorage.getItem('accessToken');
-      await fetch(`/api/v1/tweet/${tweet._id}`, {
+      await fetch(`${serverUrl}/api/v1/tweet/${tweet._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -147,4 +148,3 @@ const TweetItem: React.FC<TweetItemProps> = ({ tweet, canEdit, onChanged }) => {
 };
 
 export default TweetItem;
-
