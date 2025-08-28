@@ -122,9 +122,30 @@ const TweetItem: React.FC<TweetItemProps> = ({ tweet, canEdit, onChanged }) => {
 
       {/* Actions */}
       <div className="flex gap-4 mt-3 items-center">
-        <button className="flex items-center gap-1 text-gray-400 hover:text-red-500">
-          <Heart size={16} /> {tweet.likesCount || 0}
-        </button>
+        <button
+  onClick={async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch(`${serverUrl}/api/v1/likes/toggle/t/${tweet._id}`, {
+        method: 'POST',
+        headers: { Authorization: token ? `Bearer ${token}` : '' },
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to toggle like');
+      onChanged?.(); // refresh parent after like/unlike
+    } catch (err) {
+      console.error(err);
+      alert('Failed to like/unlike tweet');
+    }
+  }}
+  className={`flex items-center gap-1 transition ${
+    tweet.isLiked ? 'text-red-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'
+  }`}
+>
+  <Heart size={16} fill={tweet.isLiked ? 'currentColor' : 'none'} />{' '}
+  {tweet.likesCount || 0}
+</button>
+
 
         {canEdit && !editing && (
           <>

@@ -6,7 +6,6 @@ import TweetComposer from '../components/TweetComposer';
 import TweetItem, { TweetItemData } from '../components/TweetItem';
 import { useAuth } from '../context/AuthContext';
 
-// Typing for the /current-user API response
 interface MeResponse {
   data?: {
     _id: string;
@@ -14,7 +13,6 @@ interface MeResponse {
   };
 }
 
-// Typing for the /tweet API response
 interface TweetResponse {
   _id: string;
   content: string;
@@ -37,22 +35,18 @@ const TweetsPage: React.FC = () => {
   const [me, setMe] = useState<{ _id: string; username: string } | null>(null);
   const [showAll, setShowAll] = useState(true);
 
-  // ✅ Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const tweetsPerPage = 10;
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-  const fetchMe = useCallback(async (): Promise<{ _id: string; username: string } | null> => {
+  const fetchMe = useCallback(async () => {
     if (!isLoggedIn) return null;
-
     const res = await fetch(`${serverUrl}/api/v1/users/current-user`, {
       headers: { Authorization: token ? `Bearer ${token}` : '' },
       credentials: 'include',
     });
-
     if (!res.ok) return null;
-
     const data: MeResponse = await res.json();
     return data?.data || null;
   }, [isLoggedIn, token]);
@@ -74,8 +68,7 @@ const TweetsPage: React.FC = () => {
       }
 
       const data: { data?: TweetResponse[] } = await res.json();
-
-      return (data?.data || []).map((t: TweetResponse) => ({
+      return (data?.data || []).map((t) => ({
         _id: t._id,
         content: t.content,
         createdAt: t.createdAt,
@@ -93,18 +86,16 @@ const TweetsPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-
       const meData = await fetchMe();
       if (!meData) {
         setTweets([]);
         setMe(null);
         return;
       }
-
       setMe(meData);
       const items = await fetchTweets(meData._id);
       setTweets(items);
-      setCurrentPage(1); // ✅ Reset to page 1 on reload
+      setCurrentPage(1);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError('Something went wrong');
@@ -119,76 +110,88 @@ const TweetsPage: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="max-w-xl mx-auto mt-6 p-4 border rounded bg-gray-900 text-white">
-        <p>Please login to view and post tweets.</p>
+      <div className="max-w-md mx-auto mt-6 p-6 rounded-xl bg-gray-900/90 text-white text-center shadow-lg">
+        <p className="text-lg font-medium">Please login to view and post tweets.</p>
       </div>
     );
   }
 
-  // ✅ Pagination calculation
   const indexOfLastTweet = currentPage * tweetsPerPage;
   const indexOfFirstTweet = indexOfLastTweet - tweetsPerPage;
   const currentTweets = tweets.slice(indexOfFirstTweet, indexOfLastTweet);
   const totalPages = Math.ceil(tweets.length / tweetsPerPage);
 
   return (
-    <div className="max-w-xl mx-auto px-3 py-4 flex flex-col gap-4 bg-gray-900 min-h-screen text-white">
-      <TweetComposer onCreated={load} />
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-6 min-h-screen text-white bg-#0a0a0a">
+      {/* Tweet Composer */}
+      <div className="mb-6">
+        <TweetComposer onCreated={load} />
+      </div>
 
       {/* Toggle Buttons */}
-      <div className="flex justify-center gap-2 mb-3">
+      <div className="flex justify-center gap-3 mb-6">
         <button
           onClick={() => setShowAll(true)}
-          className={`px-3 py-1 rounded ${
-            showAll ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white'
+          className={`px-5 py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
+            showAll
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
           }`}
         >
           All Tweets
         </button>
         <button
           onClick={() => setShowAll(false)}
-          className={`px-3 py-1 rounded ${
-            !showAll ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white'
+          className={`px-5 py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
+            !showAll
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
           }`}
         >
           My Tweets
         </button>
       </div>
 
+      {/* Loading / Error / Empty */}
       {loading && <p className="text-center text-gray-400">Loading…</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
       {!loading && !error && tweets.length === 0 && (
-        <p className="text-center text-gray-400">No tweets yet.</p>
+        <p className="text-center text-gray-500">No tweets yet.</p>
       )}
 
-      <div className="flex flex-col gap-3">
+      {/* Tweets Feed */}
+      <div className="flex flex-col gap-4">
         {currentTweets.map((t) => (
-          <TweetItem
+          <div
             key={t._id}
-            tweet={t}
-            canEdit={showAll ? t.ownerId === me?._id : true}
-            onChanged={load}
-          />
+            className="bg-gray-900/80 rounded-2xl p-4 shadow-md hover:shadow-lg hover:bg-gray-800/80 transition duration-200"
+          >
+            <TweetItem
+              tweet={t}
+              canEdit={showAll ? t.ownerId === me?._id : true}
+              onChanged={load}
+            />
+          </div>
         ))}
       </div>
 
-      {/* ✅ Pagination Controls */}
+      {/* Pagination */}
       {tweets.length > tweetsPerPage && (
-        <div className="flex justify-center items-center gap-3 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-6">
           <button
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-800 rounded-full text-sm disabled:opacity-40 hover:bg-gray-700 transition"
           >
             Prev
           </button>
-          <span>
+          <span className="text-sm text-gray-400">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-800 rounded-full text-sm disabled:opacity-40 hover:bg-gray-700 transition"
           >
             Next
           </button>
