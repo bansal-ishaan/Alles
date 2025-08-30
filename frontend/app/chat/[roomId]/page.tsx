@@ -64,8 +64,12 @@ export default function ChatRoomPage() {
                 const uniqueMembers = Array.from(new Map(roomData.data.members.map((m: Member) => [m._id, m])).values());
                 setRoomDetails({ ...roomData.data, members: uniqueMembers });
                 setCurrentUser(userData.data);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError("An unexpected error occurred");
+        }
             } finally {
                 setIsLoading(false);
             }

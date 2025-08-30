@@ -29,43 +29,10 @@ export default function ChatHomePage() {
     const [joinedRooms, setJoinedRooms] = useState<JoinedRoom[]>([]);
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
     const router = useRouter();
-    const { isLoggedIn, logout, toggleSidebar } = useAuth();
-    
-               
-    useEffect(() => {
-        toggleSidebar(); 
-    },[]);
-
+   
       
-      useEffect(() => {
-        if (!isLoggedIn) {
-          setCurrentUser(null);
-          return;
-        }
-    
-        const fetchUserDetails = async () => {
-          const token = localStorage.getItem('accessToken');
-          if (!token) return;
-    
-          try {
-            const response = await fetch(`${serverUrl}/api/v1/users/current-user`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-    
-            if (response.ok) {
-              const result = await response.json();
-              setCurrentUser(result.data);
-            } else {
-              console.error('Navbar: Invalid token. Logging out.');
-              logout();
-            }
-          } catch (error) {
-            console.error('Navbar: Failed to fetch user details', error);
-          }
-        };
-    
-        fetchUserDetails();
-      }, [isLoggedIn, logout]);
+      
+        
 
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
@@ -127,8 +94,12 @@ export default function ChatHomePage() {
 
       const createdRoomId = data.data.roomId;
       router.push(`/chat/${createdRoomId}`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError("An unexpected error occurred");
+        }
     }
   };
 
