@@ -104,7 +104,7 @@ export default function SubscriptionsPage() {
         <div className="text-center">
           <MdSubscriptions className="text-6xl mx-auto mb-4 text-gray-400" />
           <h1 className="text-2xl font-bold mb-2">Sign in to see your subscriptions</h1>
-          <p className="text-gray-400 mb-6">Sign in to see channels you're subscribed to</p>
+          <p className="text-gray-400 mb-6">Sign in to see channels you&apos;re subscribed to</p>
           <Link 
             href="/auth" 
             className="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors"
