@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 8000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3001";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "https://alles-iota.vercel.app";
 
 if (!MONGODB_URI || !JWT_SECRET) {
   throw new Error(
