@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { serverUrl } from '@/lib/constants'; 
 import { useAuth } from '../context/AuthContext';
-import { Hash, Plus, Compass, LogIn, User, Settings } from 'lucide-react';
+import { Hash, Plus, Compass, LogIn } from 'lucide-react';
 
 interface JoinedRoom {
     _id: string;

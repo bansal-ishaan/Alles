@@ -78,7 +78,7 @@ export default function ChatRoomPage() {
         if (isLoading || !currentUser || !roomDetails) return;
 
         const token = localStorage.getItem('accessToken');
-        const socket = io('http://localhost:8000', { auth: { token } });
+        const socket = io('https://alles-o12q.onrender.com', { auth: { token } });
         socketRef.current = socket;
 
         socket.on('connect', () => {
