@@ -1,8 +1,8 @@
 import express, { urlencoded } from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import session from "express-session"; // Import session
-import passport from "passport";     // Import passport
+import session from "express-session"; 
+import passport from "passport";     
 
 
 const app = express();
@@ -22,7 +22,6 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 
-// --- THIS IS THE FINAL, ROBUST SESSION CONFIGURATION ---
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -61,6 +60,7 @@ import healthcheckRouter from "./routes/healthcheck.routes.js";
 import playlistRouter from "./routes/playlist.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
 import dislikeRouter from "./routes/dislike.routes.js"
+import roomRouter from './routes/room.routes.js'; 
 
 //routes declaration
 app.use("/api/v1/users", userRouter);
@@ -73,5 +73,6 @@ app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/dislikes",dislikeRouter);
+app.use("/api/v1/rooms", roomRouter);
 
 export {app}

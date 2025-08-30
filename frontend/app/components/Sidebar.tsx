@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { GoHome, GoVideo } from 'react-icons/go';
 import { MdSubscriptions, MdOutlineHistory, MdOutlineThumbUp } from 'react-icons/md';
+import { IoMdChatbubbles } from "react-icons/io";
 import { serverUrl } from '@/lib/constants';
 import { FaTwitter } from 'react-icons/fa'; // Import the Twitter icon
 
@@ -88,6 +89,7 @@ export default function Sidebar() {
         <SidebarLink icon={<GoHome />} text="Home" href="/" isOpen={isSidebarOpen} />
         {/* NEW: Tweets Option */}
         <SidebarLink icon={<FaTwitter />} text="Tweets" href="/tweets" isOpen={isSidebarOpen} />
+        <SidebarLink icon={<IoMdChatbubbles />} text="Chat" href="/chat" isOpen={isSidebarOpen} />
         <SidebarLink icon={<MdSubscriptions />} text="Subscriptions" href="/subscriptions" isOpen={isSidebarOpen} />
       </div>
       <hr className="my-4 border-gray-700" />
