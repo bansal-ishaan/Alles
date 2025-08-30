@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { serverUrl } from '@/lib/constants'; 
-import { useAuth } from '../context/AuthContext';
 import { Hash, Plus, Compass, LogIn } from 'lucide-react';
 
 interface JoinedRoom {
@@ -27,7 +26,6 @@ export default function ChatHomePage() {
     const [newRoomName, setNewRoomName] = useState('');
     const [error, setError] = useState('');
     const [joinedRooms, setJoinedRooms] = useState<JoinedRoom[]>([]);
-    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
     const router = useRouter();
    
       
@@ -49,7 +47,6 @@ export default function ChatHomePage() {
                 ]);
 
                 if (roomsRes.ok) setJoinedRooms((await roomsRes.json()).data);
-                if (userRes.ok) setCurrentUser((await userRes.json()).data);
             } catch (err) {
                 console.error("Failed to fetch data:", err);
                 setError('Could not load your data.');
