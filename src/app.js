@@ -7,6 +7,13 @@ import passport from "passport";
 
 const app = express();
 
+console.log("--- Starting Application ---");
+console.log(`Node Environment (NODE_ENV): ${process.env.NODE_ENV}`);
+console.log(`CORS Origin (CORS_ORIGIN): ${process.env.CORS_ORIGIN}`);
+if (!process.env.SESSION_SECRET) {
+    console.error("FATAL ERROR: SESSION_SECRET is not defined.");
+}
+
 app.set('trust proxy', 1);
 
 import "./config/passport.config.js";
@@ -24,6 +31,7 @@ app.use(cookieParser());
 
 
 const isProduction = process.env.NODE_ENV === 'production';
+console.log(`Is application in production mode? ${isProduction}`);
 
 // Define the base cookie options
 const cookieOptions = {
@@ -32,6 +40,9 @@ const cookieOptions = {
     // SameSite must be 'lax' for local development, but 'none' for cross-site production
     sameSite: isProduction ? 'none' : 'lax'
 };
+
+console.log("Session Cookie options that will be used:", cookieOptions);
+console.log("--------------------------");
 
 // Add the domain only if in production
 
