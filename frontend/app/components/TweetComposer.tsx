@@ -48,30 +48,29 @@ const TweetComposer: React.FC<TweetComposerProps> = ({ onCreated }) => {
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="w-full border rounded-lg p-3 bg-black text-white"
-    >
-      <textarea
-        className="w-full resize-none outline-none text-white placeholder-gray-500"
-        placeholder="What's happening?"
-        maxLength={280}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        rows={3}
-      />
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-sm text-gray-500">{content.length}/280</span>
-        <button
-          type="submit"
-          disabled={submitting || !content.trim()}
-          className="px-4 py-1.5 rounded-md bg-blue-600 text-white disabled:opacity-50"
-        >
-          {submitting ? 'Posting…' : 'Tweet'}
-        </button>
-      </div>
-      {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-    </form>
+    <div className="border-b border-gray-700 p-4">
+      <form onSubmit={handleSubmit}>
+        <textarea
+          className="w-full bg-transparent text-lg text-white placeholder-gray-500 resize-none outline-none"
+          placeholder="What is happening?!"
+          maxLength={280}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={3}
+        />
+        <div className="flex items-center justify-between mt-4">
+          <span className="text-sm text-gray-500">{content.length}/280</span>
+          <button
+            type="submit"
+            disabled={submitting || !content.trim()}
+            className="px-4 py-2 rounded-full bg-blue-500 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Posting...' : 'Post'}
+          </button>
+        </div>
+        {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+      </form>
+    </div>
   );
 };
 

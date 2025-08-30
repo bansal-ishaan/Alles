@@ -121,69 +121,54 @@ const TweetsPage: React.FC = () => {
   const currentTweets = tweets.slice(indexOfFirstTweet, indexOfLastTweet);
   const totalPages = Math.ceil(tweets.length / tweetsPerPage);
 
-  return (
-    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-6 min-h-screen text-white bg-#0a0a0a">
-      {/* Tweet Composer */}
-      <div className="mb-6">
-        <TweetComposer onCreated={load} />
+ return (
+    <div className="w-full max-w-2xl mx-auto border-l border-r border-gray-700 min-h-screen">
+      <div className="sticky top-0 bg-black bg-opacity-80 backdrop-blur-md z-10 px-4 py-3">
+        <h1 className="text-xl font-bold text-white">Home</h1>
       </div>
+      
+      <TweetComposer onCreated={load} />
 
-      {/* Toggle Buttons */}
-      <div className="flex justify-center gap-3 mb-6">
+      <div className="flex border-b border-gray-700">
         <button
           onClick={() => setShowAll(true)}
-          className={`px-5 py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
-            showAll
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
+          className={`flex-1 p-4 text-center font-bold transition-colors ${showAll ? 'text-white border-b-2 border-blue-500' : 'text-gray-500 hover:bg-gray-800'}`}
         >
-          All Tweets
+          For you
         </button>
         <button
           onClick={() => setShowAll(false)}
-          className={`px-5 py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
-            !showAll
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
+          className={`flex-1 p-4 text-center font-bold transition-colors ${!showAll ? 'text-white border-b-2 border-blue-500' : 'text-gray-500 hover:bg-gray-800'}`}
         >
-          My Tweets
+          Your Tweets
         </button>
       </div>
 
-      {/* Loading / Error / Empty */}
-      {loading && <p className="text-center text-gray-400">Loading…</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {loading && <p className="text-center text-gray-400 p-4">Loading tweets...</p>}
+      {error && <p className="text-center text-red-500 p-4">{error}</p>}
       {!loading && !error && tweets.length === 0 && (
-        <p className="text-center text-gray-500">No tweets yet.</p>
+        <p className="text-center text-gray-500 p-4">No tweets to show.</p>
       )}
 
-      {/* Tweets Feed */}
-      <div className="flex flex-col gap-4">
+      <div>
         {currentTweets.map((t) => (
-          <div
+          <TweetItem
             key={t._id}
-            className="bg-gray-900/80 rounded-2xl p-4 shadow-md hover:shadow-lg hover:bg-gray-800/80 transition duration-200"
-          >
-            <TweetItem
-              tweet={t}
-              canEdit={showAll ? t.ownerId === me?._id : true}
-              onChanged={load}
-            />
-          </div>
+            tweet={t}
+            canEdit={t.ownerId === me?._id}
+            onChanged={load}
+          />
         ))}
       </div>
 
-      {/* Pagination */}
       {tweets.length > tweetsPerPage && (
-        <div className="flex justify-center items-center gap-4 mt-6">
+        <div className="flex justify-center items-center gap-4 py-4 border-t border-gray-700">
           <button
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-800 rounded-full text-sm disabled:opacity-40 hover:bg-gray-700 transition"
+            className="px-4 py-2 bg-gray-800 rounded-full disabled:opacity-50"
           >
-            Prev
+            Previous
           </button>
           <span className="text-sm text-gray-400">
             Page {currentPage} of {totalPages}
@@ -191,7 +176,7 @@ const TweetsPage: React.FC = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-800 rounded-full text-sm disabled:opacity-40 hover:bg-gray-700 transition"
+            className="px-4 py-2 bg-gray-800 rounded-full disabled:opacity-50"
           >
             Next
           </button>
