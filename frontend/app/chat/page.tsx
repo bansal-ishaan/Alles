@@ -15,11 +15,7 @@ interface JoinedRoom {
     memberCount: number;
 }
 
-interface CurrentUser {
-    _id: string;
-    username: string;
-    avatar?: { url: string };
-}
+
 
 export default function ChatHomePage() {
     const [roomKey, setRoomKey] = useState('');
@@ -41,7 +37,7 @@ export default function ChatHomePage() {
 
         const fetchData = async () => {
             try {
-                const [roomsRes, userRes] = await Promise.all([
+                const [roomsRes] = await Promise.all([
                     fetch(`${serverUrl}/api/v1/rooms/my-rooms`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${serverUrl}/api/v1/users/current-user`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
