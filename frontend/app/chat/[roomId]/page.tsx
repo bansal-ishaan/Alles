@@ -25,6 +25,7 @@ export default function ChatRoomPage() {
     const [error, setError] = useState<string | null>(null);
     const socketRef = useRef<Socket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -83,7 +84,7 @@ export default function ChatRoomPage() {
         if (isLoading || !currentUser || !roomDetails) return;
 
         const token = localStorage.getItem('accessToken');
-        const socket = io('http://localhost:8000', { auth: { token } });
+        const socket = io('https://alles-o12q.onrender.com', { auth: { token } });
         socketRef.current = socket;
 
         socket.on('connect', () => {
