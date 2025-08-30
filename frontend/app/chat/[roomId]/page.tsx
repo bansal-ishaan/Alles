@@ -149,7 +149,9 @@ export default function ChatRoomPage() {
             if (res.ok) {
                 socketRef.current?.emit('delete room', { roomId });
             } else { alert("Failed to delete room."); }
-        } catch (err) { alert("An error occurred while deleting the room."); }
+        } catch (err) { 
+            console.error(err);
+            alert("An error occurred while deleting the room."); }
     };
 
     const handleKickMember = async (memberId: string, memberUsername: string) => {
@@ -164,7 +166,9 @@ export default function ChatRoomPage() {
             if (res.ok) {
                 socketRef.current?.emit('kick user', { roomId, memberId, memberUsername });
             } else { alert("Failed to kick member."); }
-        } catch (err) { alert("An error occurred while kicking the member."); }
+        } catch (err) { 
+            console.error(err);
+            alert("An error occurred while kicking the member."); }
     };
 
     const groupMessagesByDate = (messages: Message[]) => {
