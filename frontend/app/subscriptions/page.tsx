@@ -153,7 +153,7 @@ export default function SubscriptionsPage() {
           <h1 className="text-3xl font-bold mb-2">Subscriptions</h1>
           <p className="text-gray-400">
             {subscriptions.length === 0 
-              ? "You haven&apos;t subscribed to any channels yet" 
+              ? "You haven\u2019t subscribed to any channels yet"
               : `${subscriptions.length} channel${subscriptions.length === 1 ? '' : 's'}`
             }
           </p>
