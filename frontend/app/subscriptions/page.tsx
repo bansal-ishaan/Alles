@@ -164,7 +164,7 @@ export default function SubscriptionsPage() {
             <MdSubscriptions className="text-8xl mx-auto mb-6 text-gray-600" />
             <h2 className="text-2xl font-bold mb-4">No subscriptions yet</h2>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              When you subscribe to channels, their latest videos will appear here
+              When you subscribe to channels their latest videos will appear here
             </p>
             <Link 
               href="/" 
