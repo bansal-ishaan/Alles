@@ -3,9 +3,7 @@
 
 import Link from "next/link";
 import type { Video } from "../types";
-import { useState, useEffect } from "react"; 
 import { formatTimeAgo, formatDuration } from "@/lib/utils";
-import { serverUrl } from '@/lib/constants';
 import Image from "next/image";
 
 export default function VideoCard({ video , loggedInUserId}: { video: Video , loggedInUserId: string | null}) {
