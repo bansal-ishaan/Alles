@@ -1,12 +1,52 @@
+// app/components/VideoCard.tsx
 
-"use client"; 
+"use client"; // This must be a Client Component
 
 import Link from "next/link";
 import type { Video } from "../types";
+import { useState, useEffect } from "react"; // Import hooks
 import { formatTimeAgo, formatDuration } from "@/lib/utils";
+import { serverUrl } from '@/lib/constants';
 import Image from "next/image";
 
-export default function VideoCard({ video , loggedInUserId}: { video: Video , loggedInUserId: string | null}) {
+export default function VideoCard({ video }: { video: Video }) {
+  // State to hold the ID of the currently logged-in user
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This effect runs once when the card mounts to find out who is logged in.
+    const getCurrentUserId = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        // If there's no token, we know no one is logged in.
+        setLoggedInUserId(null);
+        return;
+      }
+
+      try {
+        // Fetch the current user details from the backend
+        const response = await fetch(
+          `${serverUrl}/api/v1/users/current-user`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          // We only need the ID for our comparison
+          setLoggedInUserId(result.data._id);
+        }
+      } catch (error) {
+        console.error("Could not fetch current user for VideoCard:", error);
+      }
+    };
+
+    getCurrentUserId();
+  }, []); // The empty array ensures this effect runs only once.
+
+  // --- THE SMART LINK LOGIC ---
+  // If we have a logged-in user ID AND it matches the video owner's ID, it's the owner.
   const isOwner = loggedInUserId && loggedInUserId === video.ownerDetails._id;
   const channelLink = isOwner ? "/profile" : `/${video.ownerDetails.username}`;
 
@@ -34,6 +74,7 @@ export default function VideoCard({ video , loggedInUserId}: { video: Video , lo
 
       {/* Details section */}
       <div className="flex gap-3 mt-2">
+        {/* The avatar and username now use the smart 'channelLink' */}
         <Link href={channelLink}>
           <img
             src={avatarUrl}
