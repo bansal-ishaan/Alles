@@ -1,93 +1,4 @@
-// // app/page.tsx
 
-// // Reverted to a Server Component for performance and SEO
-// import VideoCard from "./components/VideoCard";
-// import TagsBar from "./components/TagsBar";
-// import type { Video } from './types';
-
-// interface HomeProps {
-//     searchParams: {
-//         query?: string;
-//         sortBy?: string;
-//     };
-// }
-
-// // The data fetching function now accepts the filter parameters
-// async function getVideos({ query, sortBy }: { query?: string, sortBy?: string }): Promise<Video[]> {
-//     // Build the query string for the API call
-//     const params = new URLSearchParams();
-//     if (query && query !== 'All') {
-//         params.append('query', query);
-//     }
-//     if (sortBy) {
-//         params.append('sortBy', sortBy);
-//         params.append('sortType', 'desc'); // Default to descending for views, likes, etc.
-//     }
-
-//     const apiUrl = `http://localhost:3000/api/v1/video/?${params.toString()}`;
-
-//     try {
-//         const response = await fetch(apiUrl, { cache: 'no-store' });
-//         if (!response.ok) {
-//             console.error("API Error:", await response.text());
-//             return [];
-//         }
-//         const result = await response.json();
-//         return result.data.docs || [];
-//     } catch (error) {
-//         console.error("Fetch Error:", error);
-//         return [];
-//     }
-// }
-
-// export default async function HomePage({ searchParams }: HomeProps) {
-//     // Pass the searchParams from the URL to the data fetching function
-//     const videos: Video[] = await getVideos(searchParams);
-
-//     return (
-//         <div>
-//             {/* The TagsBar is a Client Component, but it can be used in a Server Component */}
-//             <TagsBar />
-            
-//             <div className="p-4 md:p-6">
-//                 {/* Updated grid to show 3 videos on large screens */}
-//                 <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
-//                     {videos.length > 0 ? (
-//                         videos.map((video) => (
-//                             <VideoCard key={video._id} video={video} />
-//                         ))
-//                     ) : (
-//                         <p className="col-span-full text-center mt-8 text-gray-400">
-//                             No videos found for this filter.
-//                         </p>
-//                     )}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // 1. THIS IS THE MOST IMPORTANT CHANGE.
-// // It converts this page from a Server Component to a Client Component.
 'use client';
 
 import { useState, useEffect} from 'react';
@@ -103,6 +14,41 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toggleSidebar } = useAuth(); 
+
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This effect runs once when the card mounts to find out who is logged in.
+    const getCurrentUserId = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        // If there's no token, we know no one is logged in.
+        setLoggedInUserId(null);
+        return;
+      }
+
+      try {
+        // Fetch the current user details from the backend
+        const response = await fetch(
+          `${serverUrl}/api/v1/users/current-user`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          // We only need the ID for our comparison
+          setLoggedInUserId(result.data._id);
+        }
+      } catch (error) {
+        console.error("Could not fetch current user for VideoCard:", error);
+      }
+    };
+
+    getCurrentUserId();
+  }, []); // The empty array ensures this effect runs only once.
+
 
   useEffect(() => {
     toggleSidebar(); // Ensure sidebar is always open when this page loads
@@ -158,7 +104,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
             {videos.length > 0 ? (
               videos.map((video) => (
-                <VideoCard key={video._id} video={video} />
+                <VideoCard key={video._id} video={video} loggedInUserId = {loggedInUserId} />
               ))
             ) : (
               <p className="col-span-full text-center mt-8 text-gray-400">

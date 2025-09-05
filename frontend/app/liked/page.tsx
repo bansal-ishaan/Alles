@@ -34,6 +34,39 @@ export default function LikedVideosPage() { // Renamed component for clarity
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This effect runs once when the card mounts to find out who is logged in.
+    const getCurrentUserId = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        // If there's no token, we know no one is logged in.
+        setLoggedInUserId(null);
+        return;
+      }
+
+      try {
+        // Fetch the current user details from the backend
+        const response = await fetch(
+          `${serverUrl}/api/v1/users/current-user`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          // We only need the ID for our comparison
+          setLoggedInUserId(result.data._id);
+        }
+      } catch (error) {
+        console.error("Could not fetch current user for VideoCard:", error);
+      }
+    };
+
+    getCurrentUserId();
+  }, []); // The empty array ensures this effect runs only once.
 
   useEffect(() => {
     const fetchLikedVideos = async () => {
@@ -102,7 +135,7 @@ export default function LikedVideosPage() { // Renamed component for clarity
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
           {videos.map((video) => (
-            <VideoCard key={video._id} video={video} />
+            <VideoCard key={video._id} video={video} loggedInUserId={loggedInUserId} />
           ))}
         </div>
       )}
