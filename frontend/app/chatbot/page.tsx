@@ -41,27 +41,28 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${serverUrl}/api/v1/gemini`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage.text }),
-      });
+  const res = await fetch(`${serverUrl}/api/v1/gemini`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userMessage.text }),
+  });
 
-      const data = await res.json();
-      const botMessage: Message = { role: "bot", text: data.reply };
+  const data = await res.json();
+  const botMessage: Message = { role: "bot", text: data.reply };
 
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          text: "Oops, even I couldn't come up with a reply. 🙃",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+  setMessages((prev) => [...prev, botMessage]);
+} catch {
+  // removed `err` to satisfy ESLint
+  setMessages((prev) => [
+    ...prev,
+    {
+      role: "bot",
+      text: "Oops, even I couldn't come up with a reply. 🙃",
+    },
+  ]);
+} finally {
+  setLoading(false);
+}
   }
 
   return (
