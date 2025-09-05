@@ -6,7 +6,7 @@ import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import MainContent from './components/MainContent'; // We'll create this new component
 import GoogleAuthHandler from './components/GoogleAuthHandler';
-import ChatbaseBubble from './components/chatbases-widget';
+// import ChatbaseBubble from './components/chatbases-widget';
 export const metadata: Metadata = {
   title: 'Alles',
   description: 'A modern video sharing platform',
