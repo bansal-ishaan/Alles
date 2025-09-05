@@ -8,7 +8,7 @@ import MainContent from './components/MainContent'; // We'll create this new com
 import GoogleAuthHandler from './components/GoogleAuthHandler';
 import ChatbaseBubble from './components/chatbases-widget';
 export const metadata: Metadata = {
-  title: 'MyTube',
+  title: 'Alles',
   description: 'A modern video sharing platform',
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className="bg-[#0F0F0F] text-gray-200">
         <AuthProvider>
           <GoogleAuthHandler/>
-          <ChatbaseBubble/>
+          {/* <ChatbaseBubble/> */}
           <div className="flex flex-col h-screen">
             {/* Navbar is now at the top level, always full width */}
             <Navbar />

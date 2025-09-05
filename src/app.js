@@ -72,6 +72,7 @@ import playlistRouter from "./routes/playlist.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
 import dislikeRouter from "./routes/dislike.routes.js"
 import roomRouter from './routes/room.routes.js'; 
+import geminiRouter from "./routes/gemini.routes.js";
 
 //routes declaration
 app.use("/api/v1/users", userRouter);
@@ -85,5 +86,6 @@ app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/dislikes",dislikeRouter);
 app.use("/api/v1/rooms", roomRouter);
+app.use("/api/v1/gemini", geminiRouter);
 
 export {app}
