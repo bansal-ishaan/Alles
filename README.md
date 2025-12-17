@@ -27,6 +27,8 @@ With Alles, users can:
 
 - AI Integration: OpenAI API (Chatbase)
 
+- AI Integration : Gemini API (Chatting Personal Companion)
+
 ---
 ### Deployment
 
