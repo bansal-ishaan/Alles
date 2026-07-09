@@ -43,18 +43,11 @@ With Alles, users can:
 <table>
   <tr>
     <td align="center">
-      <a href="https://github.com/Samayyy96">
-        <img src="https://avatars.githubusercontent.com/Samayyy96" width="80px;" alt=""/>
+      <a href="https://github.com/bansal-ishaan">
+        <img src="https://avatars.githubusercontent.com/bansal-ishaan" width="80px;" alt=""/>
         <br /><sub><b>Samay Toradmal</b></sub>
       </a>
     </td>
-     <td align="center">
-      <a href="https://github.com/Rohan-droid7341">
-        <img src="https://avatars.githubusercontent.com/Rohan-droid7341" width="80px;" alt=""/>
-        <br /><sub><b>Rohan Garg</b></sub>
-      </a>
-    </td>
-  </tr>
 </table>
 
 ---
