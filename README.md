@@ -45,7 +45,7 @@ With Alles, users can:
     <td align="center">
       <a href="https://github.com/bansal-ishaan">
         <img src="https://avatars.githubusercontent.com/bansal-ishaan" width="80px;" alt=""/>
-        <br /><sub><b>Samay Toradmal</b></sub>
+        <br /><sub><b>Ishaan Bansal</b></sub>
       </a>
     </td>
 </table>
